@@ -109,6 +109,18 @@ the main configuration file of RKE is `cluster.yml`
 
 the version of kubernetes, the parameters of the kubelet and the list of additional addons to installed can be specified in this file, as well as the role of the different servers in the cluster. Nodes can be part of the control plane, the etcd database and the workers. 
 
+see the one actually used for our setup. [cluster.yml](./cluster.yml)
+
+## installation of kubernetes
+
+once the cluster.yml is configured, start the installation
+```
+bin/rke up --config ./cluster.yml
+```
+
+wait a few minutes for it to complete.
+
+use the generated kube config file in the same folder as the cluster.yml file, to connect to the cluster with kubectl.
 
 
 
