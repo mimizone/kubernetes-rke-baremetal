@@ -1,6 +1,7 @@
 ---
 nodes:
-  - address: 172.30.1.207
+  # - address: 172.30.1.207
+  - address: osv7smi14c.os
     user: platform
     role:
     - controlplane
@@ -10,7 +11,17 @@ nodes:
     port: 22
     labels:
       app: ingress
-  - address: 172.30.1.208
+  # - address: 172.30.1.208
+  - address: osv7smi14a.os
+    user: platform
+    role:
+    - controlplane
+    - etcd
+    - worker
+    ssh_key_path: /home/platform/.ssh/id_rsa
+    port: 22
+  # - address: 172.30.1.211
+  - address: osv7smi16c.os
     user: platform
     role:
     - controlplane
@@ -20,105 +31,77 @@ nodes:
     port: 22
     labels:
       app: ingress
-  - address: 172.30.1.211
+  # - address: 172.30.1.209
+  - address: osv7smi14d.os
     user: platform
     role:
-    - controlplane
-    - etcd
+    - worker
+    ssh_key_path: /home/platform/.ssh/id_rsa
+    port: 22
+  # - address: 172.30.1.210
+  - address: osv7smi14b.os
+    user: platform
+    role:
+    - worker
+    ssh_key_path: /home/platform/.ssh/id_rsa
+    port: 22
+  # - address: 172.30.1.212
+  - address: osv7smi16a.os
+    user: platform
+    role:
+    - worker
+    ssh_key_path: /home/platform/.ssh/id_rsa
+    port: 22
+  # - address: 172.30.1.215
+  - address: osv7smi18c.os
+    user: platform
+    role:
+    - worker
+    ssh_key_path: /home/platform/.ssh/id_rsa
+    port: 22
+  # - address: 172.30.1.219
+  - address: osv7smi20c.os
+    user: platform
+    role:
+    - worker
+    ssh_key_path: /home/platform/.ssh/id_rsa
+    port: 22
+  # - address: 172.30.5.12
+  - address: kouda.os
+    user: platform
+    role:
     - worker
     ssh_key_path: /home/platform/.ssh/id_rsa
     port: 22
     labels:
-      app: ingress
-  - address: 172.30.1.209
-    user: platform
-    role:
-    - worker
-    ssh_key_path: /home/platform/.ssh/id_rsa
-    port: 22
-  - address: 172.30.1.210
-    user: platform
-    role:
-    - worker
-    ssh_key_path: /home/platform/.ssh/id_rsa
-    port: 22
-  - address: 172.30.1.212
-    user: platform
-    role:
-    - worker
-    ssh_key_path: /home/platform/.ssh/id_rsa
-    port: 22
-  - address: 172.30.1.215
-    user: platform
-    role:
-    - worker
-    ssh_key_path: /home/platform/.ssh/id_rsa
-    port: 22
-  - address: 172.30.1.219
-    user: platform
-    role:
-    - worker
-    ssh_key_path: /home/platform/.ssh/id_rsa
-    port: 22
+      gpu: true
+      gpu-type: NVIDIA_TITAN_X
 
 services:
   etcd:
-    # if external etcd is used
-    # path: /etcdcluster
-    # external_urls:
-    #   - https://etcd-example.com:2379
-    # ca_cert: |-
-    #   -----BEGIN CERTIFICATE-----
-    #   xxxxxxxxxx
-    #   -----END CERTIFICATE-----
-    # cert: |-
-    #   -----BEGIN CERTIFICATE-----
-    #   xxxxxxxxxx
-    #   -----END CERTIFICATE-----
-    # key: |-
-    #   -----BEGIN PRIVATE KEY-----
-    #   xxxxxxxxxx
-    #   -----END PRIVATE KEY-----
   kube-api:
     service_cluster_ip_range: 10.233.0.0/18
     pod_security_policy: false
     extra_args:
       v: 4
+    image: rancher/k8s:v1.8.9-rancher1-2      
   kube-controller:
     cluster_cidr: 10.233.64.0/18
     service_cluster_ip_range: 10.233.0.0/18
+    image: rancher/k8s:v1.8.9-rancher1-2
   scheduler:
+    image: rancher/k8s:v1.8.9-rancher1-2
   kubelet:
-    cluster_domain: cluster.local
+    cluster_domain: gezora-k8s.os
     cluster_dns_server: 10.233.0.3
     infra_container_image: gcr.io/google_containers/pause-amd64:3.0
-    extra_args:
-      feature-gates: "Accelerators=true"
+    extra_args: {"feature-gates": "Accelerators=true"} #for k8s 1.7 and less... but working for 1.8 too somehow
+    image: rancher/k8s:v1.8.9-rancher1-2
   kubeproxy:
-
-# supported plugins are:
-# flannel
-# calico
-# canal
-# weave
-#
-# If you are using calico on AWS or GCE, use the network plugin config option:
-# 'calico_cloud_provider: aws'
-# or
-# 'calico_cloud_provider: gce'
-# network:
-#   plugin: calico
-#   options:
-#     calico_cloud_provider: aws
-#
-# To specify flannel interface, you can use the 'flannel_iface' option:
-# network:
-#   plugin: flannel
-#   options:
-#     flannel_iface: eth1
+    image: rancher/k8s:v1.8.9-rancher1-2
 
 network:
-  plugin: canal
+  plugin: flannel
   options:
 
 authentication:
@@ -140,7 +123,7 @@ addons: |-
         - containerPort: 80
 system_images:
   etcd: rancher/etcd:v3.0.17
-  kubernetes: rancher/k8s:v1.9.1-rancher1-1
+  kubernetes: rancher/k8s:v1.8.9-rancher1-2
   alpine: alpine:latest
   nginx_proxy: rancher/rke-nginx-proxy:v0.1.1
   cert_downloader: rancher/rke-cert-deployer:v0.1.1
@@ -149,11 +132,11 @@ system_images:
   dnsmasq: rancher/k8s-dns-dnsmasq-nanny-amd64:1.14.5
   kubedns_sidecar: rancher/k8s-dns-sidecar-amd64:1.14.5
   kubedns_autoscaler: rancher/cluster-proportional-autoscaler-amd64:1.0.0
-  # flannel: rancher/coreos-flannel:v0.9.1
-  # flannel_cni: rancher/coreos-flannel-cni:v0.2.0
-  canal_node: rancher/calico-node:v2.6.2,
-  canal_cni: rancher/calico-cni:v1.11.0
-  canal_flannel: rancher/coreos-flannel:v0.9.1
+  flannel: rancher/coreos-flannel:v0.9.1
+  flannel_cni: rancher/coreos-flannel-cni:v0.2.0
+  # canal_node: rancher/calico-node:v2.6.2
+  # canal_cni: rancher/calico-cni:v1.11.0
+  # canal_flannel: rancher/coreos-flannel:v0.9.1
 
 
 ssh_key_path: ~/.ssh/id_rsa
@@ -165,9 +148,9 @@ authorization:
   mode: rbac
 
 # If set to true, rke won't fail when unsupported Docker version is found
-ignore_docker_version: false
+ignore_docker_version: true
 
-kubernetes_version: v1.9.1-rancher1-1
+kubernetes_version: v1.8.9-rancher1-2
 
 # List of registry credentials, if you are using a Docker Hub registry,
 # you can omit the `url` or set it to `docker.io`
@@ -193,6 +176,3 @@ ingress:
   provider: nginx
   node_selector:
     app: ingress
-
-# ingress:
-#   provider: nginx
