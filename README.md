@@ -78,6 +78,74 @@ sudo usermod -aG docker ${USER}
 ```
 
 
+## note on docker version and NVidia GPU support
+
+docker version 17.12.1 introduced a bug (see https://github.com/rancher/rancher/issues/11897) which blocks from installing kubernetes with RKE (and others).
+
+nvidia-container-runtime requires by default that docker version at the time of writing this note (or 18.03). The docker-ce version has to be downgraded manually, but because nvidia docker runtime defines a dependency on it, the complete installation has to be done manually one by one.
+
+remove the all versions of docker and make sure to install 17.03 (as supported by kubernetes and rancher)
+
+then install the specific version of `nvidia-container-runtime` and `nvidia-docker2`
+
+```
+sudo apt install -y nvidia-container-runtime=2.0.0+docker17.03.2-1 
+sudo apt install -y nvidia-docker2=2.0.3+docker17.03.2-1
+```
+
+register the nvidia runtime
+```
+sudo mkdir -p /etc/systemd/system/docker.service.d
+sudo tee /etc/systemd/system/docker.service.d/override.conf <<EOF
+[Service]
+ExecStart=
+ExecStart=/usr/bin/dockerd --host=fd:// --add-runtime=nvidia=/usr/bin/nvidia-container-runtime
+EOF
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+```
+## note on docker version and NVidia GPU support
+
+docker version 17.12.1 introduced a bug (see https://github.com/rancher/rancher/issues/11897) which blocks from installing kubernetes with RKE (and others), or at least the recent version of Kubernetes in our experience (1.9.2+)
+
+nvidia-docker-runtime requires by default that docker version at the time of writing this note (or 18.03). The docker-ce version has to be downgraded manually, but because nvidia docker runtime defines a dependency on it, the complete installation has to be done manually one by one.
+
+remove the older version of docker and make sure to install 17.03 (as supported by kubernetes and rancher)
+
+then install the specific version of `nvidia-container-runtime` and `nvidia-docker2`
+
+```
+sudo apt install -y nvidia-container-runtime=2.0.0+docker17.03.2-1 
+sudo apt install -y nvidia-docker2=2.0.3+docker17.03.2-1
+```
+
+make the nvidia-container-runtime the default by putting in the `/etc/docker/daemon.json` file the following
+```
+{
+    "default-runtime": "nvidia",
+    "runtimes": {
+        "nvidia": {
+            "path": "/usr/bin/nvidia-container-runtime",
+            "runtimeArgs": []
+        }
+    }
+}
+```
+
+restart the docker daemon
+```
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+```
+
+
+
+additional configuration can be done via Enviroment Variable of the container images. (ex:select which GPUs will be made available). The official NVidia CUDA image already defines all those variables.
+
+see
+https://github.com/nvidia/nvidia-container-runtime#environment-variables-oci-spec
+
+
 ## installation of Rancher RKE
 
 on one of the servers (ex: one of the master nodes), clone the github repository of RKE and compile it.
@@ -122,6 +190,17 @@ wait a few minutes for it to complete.
 
 use the generated kube config file in the same folder as the cluster.yml file, to connect to the cluster with kubectl.
 
+## finalize GPU support
 
+the NVidia device plugin has to be installed in the cluster
+```
+# For Kubernetes v1.9
+kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v1.9/nvidia-device-plugin.yml
+```
+
+check the node is reporting gpus
+```
+kubectl describe node kouda.os | grep gpu
+```
 
 
