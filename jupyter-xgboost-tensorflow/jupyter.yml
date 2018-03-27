@@ -1,0 +1,105 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: usf
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs
+  namespace: usf
+spec:
+  selector:
+    matchLabels:
+      storage-backend: nfs
+      content: usf-jupyter-workbook
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""
+  resources:
+    requests:
+      storage: 1024Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: tf-jupyter
+  namespace: usf
+  labels:
+    app: tf-jupyter
+spec:
+  volumes:
+  - name: data
+    persistentVolumeClaim:
+      claimName: nfs
+  - name: nvidia-driver-384
+    hostPath:
+      path: /usr/lib/nvidia-384
+  - name: libcuda-so
+    hostPath:
+      path: /usr/lib/x86_64-linux-gnu/libcuda.so
+  - name: libcuda-so-1
+    hostPath:
+      path: /usr/lib/x86_64-linux-gnu/libcuda.so.1
+  - name: libcuda-so-384-111
+    hostPath:
+      path: /usr/lib/x86_64-linux-gnu/libcuda.so.384.111
+  containers:
+  - name: tensorflow
+    image: mimizone/jupyter-xgboost-tensorflow
+    ports:
+    - containerPort: 8888
+    env:
+    - name: PASSWORD
+      value: password
+    - name: LD_LIBRARY_PATH
+      value: "/usr/local/cuda/extras/CUPTI/lib64:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda/lib64:/usr/local/nvidia"
+    resources:
+      limits:
+        nvidia.com/gpu: 2    
+    volumeMounts:
+    #must match the volume name
+    - name: data
+      mountPath: "/notebooks"
+    - name: nvidia-driver-384
+      mountPath: /usr/local/nvidia
+      readOnly: true
+    - name: libcuda-so
+      mountPath: /usr/lib/x86_64-linux-gnu/libcuda.so
+    - name: libcuda-so-1
+      mountPath: /usr/lib/x86_64-linux-gnu/libcuda.so.1
+    - name: libcuda-so-384-111
+      mountPath: /usr/lib/x86_64-linux-gnu/libcuda.so.384.111
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tf-jupyter-service
+  namespace: usf
+  labels:
+    app: tf-jupyter
+spec:
+  selector:
+    app: tf-jupyter
+  ports:
+  - port: 8888
+    protocol: TCP
+    nodePort: 30061
+  type: LoadBalancer
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress
+  namespace: usf
+  labels:
+    app: tf-jupyter
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /usf-jupyter
+        backend:
+          serviceName: tf-jupyter-service
+          servicePort: 30061

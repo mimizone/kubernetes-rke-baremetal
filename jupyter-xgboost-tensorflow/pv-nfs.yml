@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: usf-workbook-nfs
+  labels:
+    storage-backend: nfs
+    content: usf-jupyter-workbook
+spec:
+  capacity:
+    storage: 1024Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  nfs:
+    server: 172.30.82.74
+    path: "/mnt/md0/k8s/volumes/jupyter-workbook"
+    readOnly: false
