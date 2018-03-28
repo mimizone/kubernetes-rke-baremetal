@@ -16,7 +16,7 @@ spec:
   selector:
     matchLabels:
       app: nginx
-  replicas: 1
+  replicas: 3
   template:
     metadata:
       labels:
@@ -39,7 +39,6 @@ metadata:
 spec:
   selector:
     app: nginx
-    # vlan: "50"
   ports:
   - port: 80
     targetPort: 80
