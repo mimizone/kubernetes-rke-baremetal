@@ -1,0 +1,80 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: rook
+---
+apiVersion: rook.io/v1alpha1
+kind: Cluster
+metadata:
+  name: rook
+  namespace: rook
+spec:
+  backend: ceph
+  dataDirHostPath: /var/lib/rook
+  hostNetwork: false
+  monCount: 3
+  resources:
+  storage: # cluster level storage configuration and selection
+    useAllNodes: false
+    useAllDevices: false
+    deviceFilter:
+    metadataDevice:
+    location:
+    storeConfig:
+    nodes:
+    - name: "osv7smi14a.os"
+      devices:
+      - name: "sdb"
+      - name: "sdc"
+      - name: "sdd"
+      - name: "sde"
+      - name: "sdf"    
+    - name: "osv7smi14b.os"
+      devices:
+      - name: "sdb"
+      - name: "sdc"
+      - name: "sdd"
+      - name: "sde"
+      - name: "sdf"
+    - name: "osv7smi14c.os"
+      devices:
+      - name: "sdb"
+      - name: "sdc"
+      - name: "sdd"
+      - name: "sde"
+      - name: "sdf"      
+    - name: "osv7smi14d.os"
+      devices:
+      - name: "sdb"
+      - name: "sdc"
+      - name: "sdd"
+      - name: "sde"
+      - name: "sdf"
+    - name: "osv7smi16a.os"
+      devices:
+      - name: "sdb"
+      - name: "sdc"
+      - name: "sdd"
+      - name: "sde"
+      - name: "sdf"
+    - name: "osv7smi16c.os"
+      devices:
+      - name: "sdb"
+      - name: "sdc"
+      - name: "sdd"
+      - name: "sde"
+      - name: "sdf"
+    - name: "osv7smi18c.os"
+      devices:
+      - name: "sdb"
+      - name: "sdc"
+      - name: "sdd"
+      - name: "sde"
+      - name: "sdf"
+    - name: "osv7smi20c.os"
+      devices:
+      - name: "sdb"
+      - name: "sdc"
+      - name: "sdd"
+      - name: "sde"
+      - name: "sdf"
