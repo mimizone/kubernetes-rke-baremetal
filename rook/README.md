@@ -47,9 +47,43 @@ connect to the instance
 kubectl -n rook exec -it rook-tools bash
 ```
 
-# Usage example
+then use the ceph client for managing ceph
+```
+root@rook-tools:/bin# ceph status
+  cluster:
+    id:     4ecae66c-2c87-4fd2-b96a-7c4377800533
+    health: HEALTH_WARN
+            11 osds down
+            1 host (5 osds) down
+            Reduced data availability: 14 pgs inactive, 2 pgs down, 13 pgs peering, 14 pgs stale
+            Degraded data redundancy: 37 pgs undersized
+            too few PGs per OSD (5 < min 30)
 
-You first need to create Storage Classes that can be used by Kubernetes pods.
+  services:
+    mon: 2 daemons, quorum rook-ceph-mon1,rook-ceph-mon0
+    mgr: rook-ceph-mgr0(active)
+    osd: 40 osds: 29 up, 40 in; 33 remapped pgs
+
+  data:
+    pools:   1 pools, 100 pgs
+    objects: 0 objects, 0 bytes
+    usage:   841 GB used, 35558 GB / 36399 GB avail
+    pgs:     24.000% pgs not active
+             34 active+undersized
+             16 active+clean
+             12 active+clean+remapped
+             10 remapped+peering
+             8  active+undersized+remapped
+             6  stale+active+undersized
+             5  peering
+             4  stale+creating+peering
+             3  stale+peering
+             2  stale+down
+```
+
+# Persistent storage example
+
+You first need to create Storage Classes (done by an admin of the cluster) that can be used by Kubernetes pods.
 
 See the example included [here](./rook-storageclass.yml)
 
@@ -67,3 +101,4 @@ the following assumes a Load Balancing service is in place in the cluster.
 kubectl get svc -n 
 ```
 
+....
