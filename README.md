@@ -1,6 +1,8 @@
 # RKE based setup of kubernetes on bare metal
 
-notes on how to setup a kubernetes cluster on bare metal using the rancher/rke installer.
+below are notes on how to setup a kubernetes cluster on bare metal using the rancher/rke installer.
+
+Subfolders explain how to set up [metallb load balancer](./metallb/) and [Rook persistent storage](./rook/)
 
 
 # prepare the servers
