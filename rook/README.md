@@ -49,36 +49,123 @@ kubectl -n rook exec -it rook-tools bash
 
 then use the ceph client for managing ceph
 ```
-root@rook-tools:/bin# ceph status
+root@rook-tools:/# ceph status
   cluster:
-    id:     4ecae66c-2c87-4fd2-b96a-7c4377800533
-    health: HEALTH_WARN
-            11 osds down
-            1 host (5 osds) down
-            Reduced data availability: 14 pgs inactive, 2 pgs down, 13 pgs peering, 14 pgs stale
-            Degraded data redundancy: 37 pgs undersized
-            too few PGs per OSD (5 < min 30)
+    id:     43d42860-5783-4bfd-aa5e-463b4ab4d866
+    health: HEALTH_OK
 
   services:
-    mon: 2 daemons, quorum rook-ceph-mon1,rook-ceph-mon0
+    mon: 3 daemons, quorum rook-ceph-mon1,rook-ceph-mon2,rook-ceph-mon0
     mgr: rook-ceph-mgr0(active)
-    osd: 40 osds: 29 up, 40 in; 33 remapped pgs
+    osd: 40 osds: 40 up, 40 in
 
   data:
-    pools:   1 pools, 100 pgs
+    pools:   0 pools, 0 pgs
     objects: 0 objects, 0 bytes
-    usage:   841 GB used, 35558 GB / 36399 GB avail
-    pgs:     24.000% pgs not active
-             34 active+undersized
-             16 active+clean
-             12 active+clean+remapped
-             10 remapped+peering
-             8  active+undersized+remapped
-             6  stale+active+undersized
-             5  peering
-             4  stale+creating+peering
-             3  stale+peering
-             2  stale+down
+    usage:   840 GB used, 35558 GB / 36399 GB avail
+    pgs:
+
+```
+
+```
+root@rook-tools:/# ceph osd status
++----+-----------------------------------+-------+-------+--------+---------+--------+---------+-----------+
+| id |                host               |  used | avail | wr ops | wr data | rd ops | rd data |   state   |
++----+-----------------------------------+-------+-------+--------+---------+--------+---------+-----------+
+| 0  | rook-ceph-osd-osv7smi14a.os-hwxzm | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 1  | rook-ceph-osd-osv7smi14a.os-hwxzm | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 2  | rook-ceph-osd-osv7smi14a.os-hwxzm | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 3  | rook-ceph-osd-osv7smi14a.os-hwxzm | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 4  | rook-ceph-osd-osv7smi14a.os-hwxzm | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 5  | rook-ceph-osd-osv7smi14b.os-nfkmw | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 6  | rook-ceph-osd-osv7smi14b.os-nfkmw | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 7  | rook-ceph-osd-osv7smi14b.os-nfkmw | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 8  | rook-ceph-osd-osv7smi14b.os-nfkmw | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 9  | rook-ceph-osd-osv7smi14b.os-nfkmw | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 10 | rook-ceph-osd-osv7smi14c.os-2b2zb | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 11 | rook-ceph-osd-osv7smi14c.os-2b2zb | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 12 | rook-ceph-osd-osv7smi14c.os-2b2zb | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 13 | rook-ceph-osd-osv7smi14c.os-2b2zb | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 14 | rook-ceph-osd-osv7smi14c.os-2b2zb | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 15 | rook-ceph-osd-osv7smi14d.os-bwwgl | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 16 | rook-ceph-osd-osv7smi14d.os-bwwgl | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 17 | rook-ceph-osd-osv7smi14d.os-bwwgl | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 18 | rook-ceph-osd-osv7smi14d.os-bwwgl | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 19 | rook-ceph-osd-osv7smi14d.os-bwwgl | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 20 | rook-ceph-osd-osv7smi16a.os-2b2x6 | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 21 | rook-ceph-osd-osv7smi16a.os-2b2x6 | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 22 | rook-ceph-osd-osv7smi16a.os-2b2x6 | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 23 | rook-ceph-osd-osv7smi16a.os-2b2x6 | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 24 | rook-ceph-osd-osv7smi16a.os-2b2x6 | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 25 | rook-ceph-osd-osv7smi16c.os-zkclk | 21.0G | 71.5G |    0   |     0   |    0   |     0   | exists,up |
+| 26 | rook-ceph-osd-osv7smi16c.os-zkclk | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 27 | rook-ceph-osd-osv7smi16c.os-zkclk | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 28 | rook-ceph-osd-osv7smi16c.os-zkclk | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 29 | rook-ceph-osd-osv7smi16c.os-zkclk | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 30 | rook-ceph-osd-osv7smi18c.os-zr8kg | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 31 | rook-ceph-osd-osv7smi18c.os-zr8kg | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 32 | rook-ceph-osd-osv7smi18c.os-zr8kg | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 33 | rook-ceph-osd-osv7smi18c.os-zr8kg | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 34 | rook-ceph-osd-osv7smi18c.os-zr8kg | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 35 | rook-ceph-osd-osv7smi20c.os-qf7wz | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 36 | rook-ceph-osd-osv7smi20c.os-qf7wz | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 37 | rook-ceph-osd-osv7smi20c.os-qf7wz | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 38 | rook-ceph-osd-osv7smi20c.os-qf7wz | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
+| 39 | rook-ceph-osd-osv7smi20c.os-qf7wz | 21.0G |  909G |    0   |     0   |    0   |     0   | exists,up |
++----+-----------------------------------+-------+-------+--------+---------+--------+---------+-----------+
+```
+
+watch events in the cpeh cluster as they go
+```
+root@rook-tools:/# ceph -w
+  cluster:
+    id:     43d42860-5783-4bfd-aa5e-463b4ab4d866
+    health: HEALTH_WARN
+            noscrub,nodeep-scrub flag(s) set
+
+  services:
+    mon: 3 daemons, quorum rook-ceph-mon1,rook-ceph-mon2,rook-ceph-mon0
+    mgr: rook-ceph-mgr0(active)
+    osd: 25 osds: 22 up, 22 in
+         flags noscrub,nodeep-scrub
+
+  data:
+    pools:   0 pools, 0 pgs
+    objects: 0 objects, 0 bytes
+    usage:   462 GB used, 20018 GB / 20480 GB avail
+    pgs:
+
+
+2018-03-30 00:23:20.614628 mon.rook-ceph-mon1 [INF] osd.21 10.233.66.40:6804/606 boot
+2018-03-30 00:23:34.808480 mon.rook-ceph-mon1 [INF] osd.22 10.233.66.40:6808/833 boot
+2018-03-30 00:23:48.769462 mon.rook-ceph-mon1 [INF] osd.23 10.233.66.40:6812/1060 boot
+```
+
+state of distributed file system
+```
+root@rook-tools:/# ceph df
+GLOBAL:
+    SIZE       AVAIL      RAW USED     %RAW USED
+    36399G     35558G         840G          2.31
+POOLS:
+    NAME     ID     USED     %USED     MAX AVAIL     OBJECTS
+```
+
+health of the cluster
+```
+root@rook-tools:/# ceph health
+HEALTH_WARN noscrub,nodeep-scrub flag(s) set
+```
+
+distributed file system via Rados
+```
+root@rook-tools:/# rados df
+POOL_NAME USED OBJECTS CLONES COPIES MISSING_ON_PRIMARY UNFOUND DEGRADED RD_OPS RD WR_OPS WR
+
+total_objects    0
+total_used       840G
+total_avail      35558G
+total_space      36399G
 ```
 
 # Persistent storage example
