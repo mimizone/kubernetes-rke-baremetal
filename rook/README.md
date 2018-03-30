@@ -168,6 +168,16 @@ total_avail      35558G
 total_space      36399G
 ```
 
+once you have created a pool via kubernetes storage classes for instance, you may need to change the number of Placement groups for performance optimization. Placement Group number can only be increase, never decreased. It is also a power of 2 number.
+
+```
+ceph osd pool set POOLNAME pg_num 1024
+```
+then once it is done (it may take a lot of time if the pool has data or it's instantaneous if empty), you need to change the Placement Group for Placement (PGP) to actually use those Placement groups.
+```
+ceph osd pool set POOLNAME pgp_num 1024
+```
+
 # Persistent storage example
 
 You first need to create Storage Classes (done by an admin of the cluster) that can be used by Kubernetes pods.
