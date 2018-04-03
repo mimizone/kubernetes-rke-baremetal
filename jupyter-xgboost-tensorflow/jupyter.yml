@@ -47,7 +47,7 @@ spec:
       path: /usr/lib/x86_64-linux-gnu/libcuda.so.384.111
   containers:
   - name: tensorflow
-    image: mimizone/jupyter-xgboost-tensorflow
+    image: mimizone/jupyter-xgboost-tensorflow:usf
     ports:
     - containerPort: 8888
     env:
@@ -57,7 +57,7 @@ spec:
       value: "/usr/local/cuda/extras/CUPTI/lib64:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda/lib64:/usr/local/nvidia"
     resources:
       limits:
-        nvidia.com/gpu: 2    
+        nvidia.com/gpu: 1    
     volumeMounts:
     #must match the volume name
     - name: data
@@ -86,7 +86,7 @@ spec:
   - port: 8888
     protocol: TCP
     nodePort: 30061
-  type: LoadBalancer
+  type: NodePort
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
