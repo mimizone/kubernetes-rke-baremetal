@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-kube-dns-access
+  namespace: kube-system
+spec:
+  podSelector:
+    matchLabels:
+      k8s-app: kube-dns
+  ingress:
+  - from:
+    - namespaceSelector: {}
+  - to:
+    ports:
+    - protocol: UDP
+      port: 53
+  egress: 
+  - {}
+  policyTypes:
+  - Egress
+  - Ingress
