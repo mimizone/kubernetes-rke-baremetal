@@ -1,0 +1,117 @@
+name: py36
+channels:
+- pytorch
+- defaults
+dependencies:
+- cuda75
+- cudnn
+- numpy
+- pillow
+- jpeg
+- spacy
+- zlib
+- freetype
+- libtiff
+- bleach
+- certifi
+- cffi
+- cycler
+- dask
+- decorator
+- entrypoints
+- expat
+  #- fontconfig
+  #- glib
+- flask
+# - fuzzywuzzy
+- html5lib
+- icu
+- ipykernel
+- ipython
+- ipython_genutils
+- ipywidgets
+  #- jbig
+- jedi
+- jinja2
+- jsonschema
+- jupyter
+- jupyter_client
+- jupyter_console
+- jupyter_core
+  #- libffi
+  #- libgcc
+  #- libgfortran
+- libiconv
+- libpng
+- libsodium
+- libxml2
+- markupsafe
+- matplotlib
+- mistune
+- mkl
+- nbconvert
+- nbformat
+- notebook
+- numba
+- olefile
+- openssl
+- pandas
+- pandocfilters
+- path.py
+- patsy
+- pcre
+- pexpect
+- pickleshare
+- pip
+- prompt_toolkit
+  #- ptyprocess
+- pycparser
+- pygments
+- pyparsing
+- pyqt
+- python>=3.6.0
+- python-dateutil
+- pytz
+- pyzmq
+- qt
+- qtconsole
+  #- readline
+- scipy
+- seaborn
+- setuptools
+- simplegeneric
+- sip
+- six
+# - sklearn
+- sqlite
+- statsmodels
+  #- terminado
+- testpath
+- tk
+- tornado<5
+- tqdm
+- traitlets
+- wcwidth
+- wheel
+- widgetsnbextension
+- xz
+- zeromq
+- pytorch<0.4
+- bcolz
+- pip:
+  - torchvision>=0.1.9
+  - fuzzywuzzy
+  - opencv-python
+  - isoweek
+  - pandas_summary
+  - torchtext
+  - graphviz
+  - sklearn
+  - sklearn_pandas
+  - feather-format
+  - jupyter_contrib_nbextensions
+  - plotnine
+  - awscli
+  - kaggle-cli
+  - ipywidgets
+  - jupyter_contrib_nbextensions
