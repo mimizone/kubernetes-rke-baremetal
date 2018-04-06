@@ -135,6 +135,8 @@ spec:
         # Set the path where the Rook agent can find the flex volumes
         # - name: FLEXVOLUME_DIR_PATH
         #  value: "<PathToFlexVolumes>"
+        - name: FLEXVOLUME_DIR_PATH
+          value: "/var/lib/kubelet/volumeplugins"
         # The interval to check if every mon is in the quorum.
         - name: ROOK_MON_HEALTHCHECK_INTERVAL
           value: "45s"
