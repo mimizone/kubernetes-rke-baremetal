@@ -188,9 +188,10 @@ See the example included [here](./rook-storageclass.yml)
 kubectl create -f rook-storageclass.yml
 ```
 
-instantiate a simple nginx server using the included configuration [example.yml](./example.yml)
+## Deployment
+instantiate a simple nginx server using the included configuration [example-deployment.yml](./example-deployment.yml)
 ```
-kubectl create -f example.yml
+kubectl create -f example-deployment.yml
 ```
 
 the following assumes a Load Balancing service is in place in the cluster.
@@ -198,4 +199,9 @@ the following assumes a Load Balancing service is in place in the cluster.
 kubectl get svc -n 
 ```
 
-....
+## Statefulset
+instantiate a statefulset that uses volumeclaims
+[example-simplehttpset.yml](./example-simplehttpset.yml)
+```
+kubectl create -f example-simplehttpset.yml
+```

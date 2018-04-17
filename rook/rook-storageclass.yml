@@ -14,3 +14,4 @@ metadata:
 provisioner: rook.io/block
 parameters:
   pool: replicapool
+  clusterName: rook
