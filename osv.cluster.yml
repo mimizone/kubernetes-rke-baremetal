@@ -110,7 +110,7 @@ services:
     cluster_dns_server: 10.233.0.3
     infra_container_image: gcr.io/google_containers/pause-amd64:3.0
     # extra_args: {"feature-gates": "Accelerators=true"} #for k8s 1.7 and less... but working for 1.8 too somehow
-    extra_args: {"feature-gates": "DevicePlugins=true"} #for k8s 1.8+
+    extra_args: { feature-gates: "DevicePlugins=true"}
     image: rancher/k8s:v1.9.5-rancher1-1
   kubeproxy:
     image: rancher/k8s:v1.9.5-rancher1-1
