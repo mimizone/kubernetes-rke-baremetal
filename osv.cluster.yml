@@ -1,5 +1,23 @@
 ---
 nodes:
+  # - address: 172.30.1.38
+  #   user: linuxboot
+  #   role:
+  #   - worker
+  #   ssh_key_path: /home/platform/.ssh/id_rsa
+  #   port: 22
+  #   labels:
+  #     app: ingress
+  #     vlan: "50"
+  - address: bdgpu.os
+  user: platform
+  role:
+  - worker
+  ssh_key_path: /home/platform/.ssh/id_rsa
+  port: 22
+  labels:
+    app: ingress
+    vlan: "50"
   # - address: 172.30.1.207
   - address: osv7smi14c.os
     user: platform
