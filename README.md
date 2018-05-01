@@ -27,6 +27,11 @@ sudo apt update
 sudo apt upgrade -y
 ```
 
+install the nfs client
+```
+sudo apt install -y nfs-common
+```
+
 configure the hostname
 ```
 sudo hostname THE_HOSTNAME
@@ -88,40 +93,33 @@ nvidia-container-runtime requires by default that docker version at the time of 
 
 remove the all versions of docker and make sure to install 17.03 (as supported by kubernetes and rancher)
 
-then install the specific version of `nvidia-container-runtime` and `nvidia-docker2`
+first add the respective repositories from nvidia
 
+```
+curl -s -L https://nvidia.github.io/nvidia-container-runtime/gpgkey | \
+  sudo apt-key add -
+distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+curl -s -L https://nvidia.github.io/nvidia-container-runtime/$distribution/nvidia-container-runtime.list | \
+  sudo tee /etc/apt/sources.list.d/nvidia-container-runtime.list
+sudo apt-get update
+```
+
+```
+curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | \
+  sudo apt-key add -
+distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | \
+  sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+sudo apt-get update
+```
+
+then install the specific version of `nvidia-container-runtime` and `nvidia-docker2`
 ```
 sudo apt install -y nvidia-container-runtime=2.0.0+docker17.03.2-1 
 sudo apt install -y nvidia-docker2=2.0.3+docker17.03.2-1
 ```
 
-register the nvidia runtime
-```
-sudo mkdir -p /etc/systemd/system/docker.service.d
-sudo tee /etc/systemd/system/docker.service.d/override.conf <<EOF
-[Service]
-ExecStart=
-ExecStart=/usr/bin/dockerd --host=fd:// --add-runtime=nvidia=/usr/bin/nvidia-container-runtime
-EOF
-sudo systemctl daemon-reload
-sudo systemctl restart docker
-```
-## note on docker version and NVidia GPU support
-
-docker version 17.12.1 introduced a bug (see https://github.com/rancher/rancher/issues/11897) which blocks from installing kubernetes with RKE (and others), or at least the recent version of Kubernetes in our experience (1.9.2+)
-
-nvidia-docker-runtime requires by default that docker version at the time of writing this note (or 18.03). The docker-ce version has to be downgraded manually, but because nvidia docker runtime defines a dependency on it, the complete installation has to be done manually one by one.
-
-remove the older version of docker and make sure to install 17.03 (as supported by kubernetes and rancher)
-
-then install the specific version of `nvidia-container-runtime` and `nvidia-docker2`
-
-```
-sudo apt install -y nvidia-container-runtime=2.0.0+docker17.03.2-1 
-sudo apt install -y nvidia-docker2=2.0.3+docker17.03.2-1
-```
-
-make the nvidia-container-runtime the default by putting in the `/etc/docker/daemon.json` file the following
+register the nvidia runtime by making the nvidia-container-runtime the default by putting in the `/etc/docker/daemon.json` file the following
 ```
 {
     "default-runtime": "nvidia",
@@ -134,18 +132,49 @@ make the nvidia-container-runtime the default by putting in the `/etc/docker/dae
 }
 ```
 
+on some system, you may need to do it this way, by configuring systemd instead
+
+```
+sudo mkdir -p /etc/systemd/system/docker.service.d
+sudo tee /etc/systemd/system/docker.service.d/override.conf <<EOF
+[Service]
+ExecStart=
+ExecStart=/usr/bin/dockerd --host=fd:// --add-runtime=nvidia=/usr/bin/nvidia-container-runtime
+EOF
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+```
+
 restart the docker daemon
 ```
 sudo systemctl daemon-reload
 sudo systemctl restart docker
 ```
 
-
-
 additional configuration can be done via Enviroment Variable of the container images. (ex:select which GPUs will be made available). The official NVidia CUDA image already defines all those variables.
 
 see
 https://github.com/nvidia/nvidia-container-runtime#environment-variables-oci-spec
+
+
+### install the CUDA libraries
+
+find the right version available in this folder
+https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/
+```
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/cuda-repo-ubuntu1604_9.1.85-1_amd64.deb
+```
+it should spill out the next command to add the repository key.
+for example
+```
+sudo apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/7fa2af80.pub
+```
+
+install cuda
+```
+sudo apt-get update
+sudo apt-get install -y --no-install-recommends cuda
+```
 
 
 ## installation of Rancher RKE
