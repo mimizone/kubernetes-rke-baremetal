@@ -87,13 +87,37 @@ sudo usermod -aG docker ${USER}
 
 ## note on docker version and NVidia GPU support
 
-docker version 17.12.1 introduced a bug (see https://github.com/rancher/rancher/issues/11897) which blocks from installing kubernetes with RKE (and others).
+Docker version 17.12.1 introduced a bug (see https://github.com/rancher/rancher/issues/11897) which blocks from installing kubernetes with RKE (and others).
 
 nvidia-container-runtime requires by default that docker version at the time of writing this note (or 18.03). The docker-ce version has to be downgraded manually, but because nvidia docker runtime defines a dependency on it, the complete installation has to be done manually one by one.
 
-remove the all versions of docker and make sure to install 17.03 (as supported by kubernetes and rancher)
+Remove the all versions of docker and make sure to install 17.03 (as supported by kubernetes and rancher) as explained previously.
 
-first add the respective repositories from nvidia
+### install the CUDA libraries
+
+find the right version available in this folder
+https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/
+
+here's an example for version `9.1.85-1`
+```
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/cuda-repo-ubuntu1604_9.1.85-1_amd64.deb
+```
+
+it should spill out the next command to add the repository key.
+for example
+```
+sudo apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/7fa2af80.pub
+```
+
+install cuda
+```
+sudo apt-get update
+sudo apt-get install -y --no-install-recommends cuda
+```
+
+then add the respective repositories from nvidia docker related things.
+
+### nvidia-container-runtime repository
 
 ```
 curl -s -L https://nvidia.github.io/nvidia-container-runtime/gpgkey | \
@@ -103,6 +127,8 @@ curl -s -L https://nvidia.github.io/nvidia-container-runtime/$distribution/nvidi
   sudo tee /etc/apt/sources.list.d/nvidia-container-runtime.list
 sudo apt-get update
 ```
+
+### nvidia-docker repository
 
 ```
 curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | \
@@ -118,6 +144,8 @@ then install the specific version of `nvidia-container-runtime` and `nvidia-dock
 sudo apt install -y nvidia-container-runtime=2.0.0+docker17.03.2-1 
 sudo apt install -y nvidia-docker2=2.0.3+docker17.03.2-1
 ```
+
+### set nvidia-container-runtime as default
 
 register the nvidia runtime by making the nvidia-container-runtime the default by putting in the `/etc/docker/daemon.json` file the following
 ```
@@ -145,11 +173,7 @@ sudo systemctl daemon-reload
 sudo systemctl restart docker
 ```
 
-restart the docker daemon
-```
-sudo systemctl daemon-reload
-sudo systemctl restart docker
-```
+### configure nvidia-container-runtime
 
 additional configuration can be done via Enviroment Variable of the container images. (ex:select which GPUs will be made available). The official NVidia CUDA image already defines all those variables.
 
@@ -157,25 +181,33 @@ see
 https://github.com/nvidia/nvidia-container-runtime#environment-variables-oci-spec
 
 
-### install the CUDA libraries
+A useful setup is to automatically add the path to the nvidia driver libraries in the LD_LIBRARY_PATH used by the nvidia-container-runtime. That will allow the users to not have to worry about mounting the right path/files in their kubernetes manifests.
 
-find the right version available in this folder
-https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/
+edit `/etc/nvidia-container-runtime/config.toml` to set LD_LIBRARY_PATH in the environment variable.
+For example, for the `nvidia-390` drivers.
+
 ```
-wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/cuda-repo-ubuntu1604_9.1.85-1_amd64.deb
-```
-it should spill out the next command to add the repository key.
-for example
-```
-sudo apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/7fa2af80.pub
+$ cat /etc/nvidia-container-runtime/config.toml
+disable-require = false
+#swarm-resource = "DOCKER_RESOURCE_GPU"
+
+[nvidia-container-cli]
+#root = "/run/nvidia/driver"
+#path = "/usr/bin/nvidia-container-cli"
+environment = ["LD_LIBRARY_PATH=/usr/lib/nvidia-390"]
+#debug = "/var/log/nvidia-container-runtime-hook.log"
+#ldcache = "/etc/ld.so.cache"
+load-kmods = true
+ldconfig = "@/sbin/ldconfig.real"
 ```
 
-install cuda
-```
-sudo apt-get update
-sudo apt-get install -y --no-install-recommends cuda
-```
+### restart docker
 
+restart the docker daemon
+```
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+```
 
 ## installation of Rancher RKE
 
@@ -225,8 +257,8 @@ use the generated kube config file in the same folder as the cluster.yml file, t
 
 the NVidia device plugin has to be installed in the cluster
 ```
-# For Kubernetes v1.9
-kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v1.9/nvidia-device-plugin.yml
+# For Kubernetes v1.10
+kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v1.10/nvidia-device-plugin.yml
 ```
 
 check the node is reporting gpus
