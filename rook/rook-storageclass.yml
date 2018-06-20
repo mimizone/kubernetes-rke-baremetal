@@ -7,11 +7,37 @@ spec:
   replicated:
     size: 3
 ---
+apiVersion: rook.io/v1alpha1
+kind: Pool
+metadata:
+  name: ecpool
+  namespace: rook
+spec:
+  replicated:
+  #  size: 3
+  erasureCoded:
+    dataChunks: 2
+    codingChunks: 1
+  crushRoot: default
+---
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-   name: rook-block
+  name: rook-block
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
 provisioner: rook.io/block
 parameters:
   pool: replicapool
+  clusterName: rook
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: ec-rook-block
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "false"
+provisioner: rook.io/block
+parameters:
+  pool: ecpool
   clusterName: rook
