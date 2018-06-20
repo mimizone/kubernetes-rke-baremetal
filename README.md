@@ -93,18 +93,33 @@ nvidia-container-runtime requires by default that docker version at the time of 
 
 Remove the all versions of docker and make sure to install 17.03 (as supported by kubernetes and rancher) as explained previously.
 
+## upgrade the linux kernel
+We some version of NVidia cuda, we ran into compatibility issues with the linux kernel 4.4.0-128 we used in our main Ubuntu 16.04 image.
+
+Updating to 4.15.0 solves the problem.
+
+Do it as follow.
+
+```
+sudo apt install \
+linux-headers-4.15.0-23 \
+linux-headers-4.15.0-23-generic \
+linux-image-4.15.0-23-generic
+sudo update-grub
+sudo reboot
+```
+
 ### install the CUDA libraries
 
 find the right version available in this folder
 https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/
 
-here's an example for version `9.1.85-1`
+here's an example for version `9.2.88-1`
 ```
-wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/cuda-repo-ubuntu1604_9.1.85-1_amd64.deb
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/cuda-repo-ubuntu1604_9.2.88-1_amd64.deb
+sudo dpkg -i cuda-repo-ubuntu1604_9.2.88-1_amd64.deb
 ```
 
-it should spill out the next command to add the repository key.
-for example
 ```
 sudo apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/7fa2af80.pub
 ```
@@ -112,7 +127,12 @@ sudo apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/
 install cuda
 ```
 sudo apt-get update
-sudo apt-get install -y --no-install-recommends cuda
+sudo apt-get install -y --no-install-recommends cuda=9.2.88-1
+```
+
+test the libraries/drivers are working
+```
+nvidia-smi
 ```
 
 then add the respective repositories from nvidia docker related things.
@@ -160,7 +180,7 @@ register the nvidia runtime by making the nvidia-container-runtime the default b
 }
 ```
 
-on some system, you may need to do it this way, by configuring systemd instead
+on some system (not ubuntu 16.04), you may need to do it this way, by configuring systemd instead
 
 ```
 sudo mkdir -p /etc/systemd/system/docker.service.d
