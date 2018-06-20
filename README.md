@@ -204,7 +204,7 @@ https://github.com/nvidia/nvidia-container-runtime#environment-variables-oci-spe
 A useful setup is to automatically add the path to the nvidia driver libraries in the LD_LIBRARY_PATH used by the nvidia-container-runtime. That will allow the users to not have to worry about mounting the right path/files in their kubernetes manifests.
 
 edit `/etc/nvidia-container-runtime/config.toml` to set LD_LIBRARY_PATH in the environment variable.
-For example, for the `nvidia-390` drivers.
+For example, for the `nvidia-396` drivers.
 
 ```
 $ cat /etc/nvidia-container-runtime/config.toml
@@ -214,7 +214,7 @@ disable-require = false
 [nvidia-container-cli]
 #root = "/run/nvidia/driver"
 #path = "/usr/bin/nvidia-container-cli"
-environment = ["LD_LIBRARY_PATH=/usr/lib/nvidia-390"]
+environment = ["LD_LIBRARY_PATH=/usr/lib/nvidia-396"]
 #debug = "/var/log/nvidia-container-runtime-hook.log"
 #ldcache = "/etc/ld.so.cache"
 load-kmods = true
