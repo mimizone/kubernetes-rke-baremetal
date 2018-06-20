@@ -7,7 +7,9 @@ Rook is made of 2 components:
 
 Rook uses ceph under the hood. Ceph is using block devices (or folder) to store the data. In our setup, we will assign specific drives to rook on each node where the cluster runs.
 
-Rook also uses a local folder on each node to persist its configuration (defaulting to `/var/lib/rook`).
+Rook also uses a local folder on each node to persist its configuration (defaulting to `/var/lib/rook`). This folder should be deleted if a server is reused across installations and the ceph rook cluster should be different and reset to default setup.
+
+Also, it may require to destroy the actual partitions on the disk that were used before by another rook instance. the following command can be used on a device `sgdisk --zap-all /dev/sdXXX`
 
 # Operator installation
 
